@@ -1,0 +1,10 @@
+.collapse-button {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.collapse-button > .form-label {
+  cursor: pointer;
+  user-select: none;
+}

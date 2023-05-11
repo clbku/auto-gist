@@ -2,6 +2,7 @@ import React from 'react';
 import { VSCodeButton, VSCodeCheckbox, VSCodeDropdown, VSCodeOption, VSCodeRadio, VSCodeRadioGroup, VSCodeTextArea, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { useState } from "react";
 import { CommonMessage } from '../../../src/type';
+import Collapsible from '../Collapsible/Collapsible';
 
 const CONVENTION_TYPE = ["fix", "feat", "docs", "style", "refactor", "perf", "build", "ci", "chore", "revert"];
 
@@ -41,28 +42,7 @@ export const ConventionCommit = () => {
       <label className="form-label">Subject</label>
       <VSCodeTextField onChange={handleConventionPropChange("subject")} className='w-100' />
     </div>
-    <div className="my-2">
-      <label className="form-label">Description</label>
-      <VSCodeTextArea onChange={handleConventionPropChange("description")} className='w-100' rows={3} />
-    </div>
-    <div className="my-2">
-      <label className="form-label">Link to project management software:</label>
-      <VSCodeDropdown onChange={handleConventionPropChange("linkTo")} className="w-100">
-        {
-          ['None', 'Jira', 'Mantis'].map(value => (
-            <VSCodeOption key={value}>{value}</VSCodeOption>
-          ))
-        }
-      </VSCodeDropdown>
-    </div>
-    {
-      (convention.linkTo && convention.linkTo !== 'None' && (
-        <div className="my-2">
-          <label className="form-label">Ticket id</label>
-          <VSCodeTextField onChange={handleConventionPropChange("ticketId")} className='w-100' />
-        </div>
-      ))
-    }
+
     <div className="my-2" style={{ display: "flex", alignItems: "center" }}>
       <label style={{ marginRight: 4 }} className='form-label'>Is breaking change?</label>
       <VSCodeCheckbox
@@ -70,6 +50,32 @@ export const ConventionCommit = () => {
         onChange={() => setConvention({ ...convention, isBreaking: !convention.isBreaking })}
       />
     </div>
+
+
+    <Collapsible title='Advance'>
+      <div className="my-2">
+        <label className="form-label">Description</label>
+        <VSCodeTextArea onChange={handleConventionPropChange("description")} className='w-100' rows={3} />
+      </div>
+      <div className="my-2">
+        <label className="form-label">Link to project management software:</label>
+        <VSCodeDropdown onChange={handleConventionPropChange("linkTo")} className="w-100">
+          {
+            ['None', 'Jira', 'Mantis'].map(value => (
+              <VSCodeOption key={value}>{value}</VSCodeOption>
+            ))
+          }
+        </VSCodeDropdown>
+      </div>
+      {
+        (convention.linkTo && convention.linkTo !== 'None' && (
+          <div className="my-2">
+            <label className="form-label">Ticket id</label>
+            <VSCodeTextField onChange={handleConventionPropChange("ticketId")} className='w-100' />
+          </div>
+        ))
+      }
+    </Collapsible>
 
     <VSCodeButton onClick={handleCommit} className="w-100">Commit</VSCodeButton>
   </>;

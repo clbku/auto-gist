@@ -5,20 +5,20 @@ import { COMMANDS, VIEWS } from '../constant';
 
 
 export class ConventionViewProvider implements vscode.WebviewViewProvider {
-
   public static readonly viewType = VIEWS.COMMIT;
 
   private _view?: vscode.WebviewView;
 
-  constructor(private readonly _context: vscode.ExtensionContext) {
-    
-  }
+  constructor(private readonly _context: vscode.ExtensionContext) {}
 
   public resolveWebviewView(webviewView: vscode.WebviewView): void {
     this._view = webviewView;
     this._view.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app'))], 
+      localResourceRoots: [
+        vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app')),
+        vscode.Uri.file(path.join(this._context.extensionPath, 'medias')),
+      ],
     };
 
     this._view.webview.onDidReceiveMessage((message: Message) => {
@@ -35,18 +35,23 @@ export class ConventionViewProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private _getHtmlForWebview() {   
+  private _getHtmlForWebview() {
     const bundleScriptPath = this._view?.webview.asWebviewUri(
       vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app', 'bundle.js'))
-    ); 
-    
+    );
+
+    const codiconUri = this._view?.webview.asWebviewUri(
+      vscode.Uri.file(path.join(this._context.extensionPath, 'medias', 'codicon.css'))
+    );
+
     return `<!DOCTYPE html>
               <html lang="en">
               <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>React App</title>
-              </head>
+                <link rel="stylesheet" href="${codiconUri}" />
+                </head>
           
               <body>
                 <div id="root"></div>
