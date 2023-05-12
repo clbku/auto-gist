@@ -1,14 +1,16 @@
 import * as vscode from 'vscode';
-import { CommitType } from '../type';
 import { execGit } from '../helpers/git';
 import { COMMANDS } from '../constant';
+import { newLine } from '../helpers/os';
 
 const subscription = async (data: any) => {
-  const { type, scope, isBreaking, subject, description = '', linkTo, ticketId } = data;
+  const { type, scope, isBreaking, subject, linkTo, ticketId } = data;
 
-  const message = `${type}${scope ? `(${scope})` : ''}${
-    isBreaking ? '!' : ''
-  }: ${subject}\n\n${description}${linkTo ? `\n\nRefer-to-${linkTo}: ${ticketId}` : ''}`;
+  const title = `${type}${scope ? `(${scope})` : ''}${isBreaking ? '!' : ''}: ${subject}`;
+  const description = data.description.replace(/'/g, "'").replace(/"/g, '"');
+  const footer = `${linkTo ? `Refer-to-${linkTo}: ${ticketId}` : ''}`;
+
+  const message = `${title}${newLine(2)}${description}${newLine(2)}${footer}`;
 
   try {
     await execGit(`git commit -m "${message}"`);

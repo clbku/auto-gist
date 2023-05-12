@@ -18,8 +18,6 @@ export const getRootPath = () => {
   return normalizedPath;
 };
 
-console.log(getRootPath());
-
 export const getFilePath = (fileName: string) => {
   const rootPath = getRootPath();
 
