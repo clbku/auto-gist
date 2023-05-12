@@ -3,11 +3,13 @@ import { VSCodeButton, VSCodeCheckbox, VSCodeDropdown, VSCodeOption, VSCodeRadio
 import { useState } from "react";
 import { CommonMessage } from '../../../src/type';
 import Collapsible from '../Collapsible/Collapsible';
+import { SmartTextArea} from '../SmathTextArea/SmathTextArea';
 
 const CONVENTION_TYPE = ["fix", "feat", "docs", "style", "refactor", "perf", "build", "ci", "chore", "revert"];
 
 export const ConventionCommit = () => {
   const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false });
+  const [number, setNumber] = useState(0);
 
   const handleConventionPropChange = (key: string) => (e: any) => {
     setConvention({
@@ -20,6 +22,13 @@ export const ConventionCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "COMMON",
       payload: convention
+    });
+  };
+
+  const handleOnChange = (value: any) => {
+    setConvention({
+      ...convention,
+      description: value
     });
   };
 
@@ -55,7 +64,8 @@ export const ConventionCommit = () => {
     <Collapsible title='Advance'>
       <div className="my-2">
         <label className="form-label">Description</label>
-        <VSCodeTextArea onChange={handleConventionPropChange("description")} className='w-100' rows={3} />
+        {/* <VSCodeTextArea onChange={handleConventionPropChange("description")} className='w-100' rows={3} /> */}
+        <SmartTextArea minRows={5} onChange={handleOnChange}/>
       </div>
       <div className="my-2">
         <label className="form-label">Link to project management software:</label>
