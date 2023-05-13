@@ -2,18 +2,17 @@ import { exec } from 'child_process';
 import { workspace } from 'vscode';
 import { VERSION_PREFIX } from '../config';
 import { Commit, CommitType } from '../type';
-
-const rootPath = workspace.workspaceFolders?.[0].uri.path;
+import { getRootPath } from './file';
 
 export const execGit = (command: string): Promise<string> => {
     return new Promise((resolve, reject) => {
-        exec(command, { cwd: rootPath }, (error, stdout) => {
-            if (error) {
-                reject(error);
-                return;
-            }
-          
-            resolve(stdout);
+        exec(command, { cwd: getRootPath() }, (error, stdout) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          resolve(stdout);
         }); 
     });
 };
@@ -31,9 +30,9 @@ export const getLatestTag = async (): Promise<{version: string, tag: string}> =>
 };
 
 export const getCommitMessages = async (to?: string, from = "HEAD"): Promise<Commit[]> => {
-    let command = `git log --pretty=format:'%H %s %b----separation----'`;
+    let command = `git log --pretty=format:"%H %s %b----separation----"`;
     if (to) {
-        command = `git log ${to}..${from} --oneline --pretty=format:'%H|%s|%b----separation----'`;
+      command = `git log ${to}..${from} --oneline --pretty=format:"%H|%s|%b----separation----"`;
     }
 
     const pattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\!)?(\(.+\))?(\!)?:(.+)$/;
