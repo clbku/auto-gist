@@ -8,7 +8,7 @@ type TextFieldProps = {
 export const TextField:React.FC<TextFieldProps> = (props) => {
 
     const {className} = props;
-    const {onChange} = props
+    const {onChange} = props;
 
     return (
         <VSCodeTextField className={className} onChange={onChange}/>

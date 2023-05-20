@@ -1,8 +1,12 @@
 import { exec } from 'child_process';
-import { workspace } from 'vscode';
-import { VERSION_PREFIX } from '../config';
+import * as vscode from 'vscode';
 import { Commit, CommitType } from '../type';
 import { getRootPath } from './file';
+import { getPrefix } from './prefix';
+
+// const VERSION_PREFIX = vscode.workspace.getConfiguration().get('webviewReact.userApiVersion', 'c4i2/v');
+const VERSION_PREFIX = getPrefix("webviewReact", "userApiVersion", "c4i2/v");
+
 
 export const execGit = (command: string): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -46,8 +50,9 @@ export const getCommitMessages = async (to?: string, from = "HEAD"): Promise<Com
         for (const commit of commitMessages) {
 			const hash = commit.split("|")[0];
 			const header = commit.split("|")[1];
-            const body = commit.split("|")[2];
+            const body = commit.split("|")[2].split("\n");
 
+            const footers = getFooterFromCommit(body);
 			const matches = header.match(pattern);
 
 			if (!matches) {continue;}
@@ -57,25 +62,28 @@ export const getCommitMessages = async (to?: string, from = "HEAD"): Promise<Com
 			const scope = matches[3]?.replace(/\(|\)/g, '') ?? undefined;
 			const subject = matches[5];
 
-            const mantisRegex = /(refer-to-mantis|mantis):\s*(\d+)/i;
-            const jiraRegex = /(refer-to-jira|jira):\s*([A-Z\d-]+)/i;
+            // const mantisRegex = /(refer-to-mantis|mantis):\s*([A-Z\d-]+)/i;
+            // const jiraRegex = /(refer-to-jira|jira):\s*([A-Z\d-]+)/i;
+            // let customMatch;
+            
+            // if (!body.toLowerCase().match(mantisRegex) && !body.toLowerCase().match(jiraRegex)) {
+            //     customMatch = body.toLowerCase();
+            // }
 
-            const mantisMatch = body.toLowerCase().match(mantisRegex);
-            const jiraMatch = body.toLowerCase().match(jiraRegex);
+            // const mantisMatch = body.toLowerCase().match(mantisRegex);
+            // const jiraMatch = body.toLowerCase().match(jiraRegex);
 
-            if (mantisMatch || jiraMatch || isBreaking ) {
-                commitObjects.push({
-                    hash,
-                    type,
-                    scope,
-                    subject,
-                    isBreaking,
-                    footer: {
-                        mantisId: mantisMatch ? parseInt(mantisMatch[2]) : undefined,
-                        jiraTicket: jiraMatch ? jiraMatch[2] : undefined
-                    }
-                });
-            }
+            // const footerMatch = body.toLocaleLowerCase().includes(filter.toLocaleLowerCase());
+        
+            commitObjects.push({
+                hash,
+                type,
+                scope,
+                subject,
+                isBreaking,
+                footer: footers
+            });
+            
 		}
 
         return commitObjects;
@@ -110,3 +118,33 @@ export const commitVersion = async (newVersion: string, autoTag: boolean = false
         throw e;
     }
 };
+
+
+const getFooterFromCommit = (body: string[]) => {
+    const Regex = /([A-Z\d][A-Z\d-]+):\s*([A-Z\d-]*)/i;
+    let res: {[key: string]: string} = {};
+
+    for (const element of body) {
+        if(element.match(Regex) && element !== "") {
+            const [key, value] = element.split(":").map(item => item.trim());
+            const tmp = removeSpaces(key);
+            res[tmp] = value;
+        }
+    }
+
+
+    return res;
+};
+
+export const removeSpaces = (key: string) : string => {
+
+    const words = key.split("-");
+    const firstWord = words.shift();
+    if (!firstWord) {
+        return "";
+      }
+    const remainingWords = words.map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    return firstWord.toLowerCase() + remainingWords.join("");
+};
+
+
