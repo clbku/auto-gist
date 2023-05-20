@@ -36,22 +36,21 @@
         "command": "auto-gist.test",
         "title": "Test",
         "category": "Test Webview"
+      },
+      {
+        "command": "auto-gist.git-graph",
+        "title": "Start new cat coding session",
+        "category": "Cat Coding"
       }
     ],
     "configuration": {
-      "title": "Webview React",
+      "title": "Version Prefix",
       "properties": {
-        "webviewReact.userApiGender": {
+        "webviewReact.userApiVersion": {
           "type": "string",
-          "default": "male",
-          "enum": [
-            "male",
-            "female"
-          ],
-          "enumDescriptions": [
-            "Fetching user information with gender of male",
-            "Fetching user information with gender of female"
-          ]
+          "default": "",
+          "pattern": "^(|[a-zA-Z0-9]+\\/v)$",
+          "errorMessage": "Invalid!"
         }
       }
     },
@@ -117,6 +116,8 @@
     "webpack-cli": "^4.5.0"
   },
   "dependencies": {
+    "@gitgraph/js": "^1.4.0",
+    "@gitgraph/react": "^1.6.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

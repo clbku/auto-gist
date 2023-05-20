@@ -7,6 +7,6 @@ type VSCode = {
 };
 
 declare const vscode: VSCode;
-declare const appType: "auto-versioning" | "convention-commit";
+declare const appType: "auto-versioning" | "convention-commit" | "git-graph";
 
 declare const apiUserGender: string;

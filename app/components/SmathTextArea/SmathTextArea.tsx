@@ -14,7 +14,7 @@ export const SmartTextArea: React.FC<SmartTextAreaProp> = (props) => {
         e.target.control.style.height = 'auto';
         e.target.control.style.height = `${e.target.control.scrollHeight + 10}px`;
 
-        onChange(e.target.currentValue) ;
+        onChange(e) ;
     };
 
     return (

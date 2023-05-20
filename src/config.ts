@@ -1,1 +1,0 @@
-export const VERSION_PREFIX = "c4i2/v";

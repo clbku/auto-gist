@@ -12,5 +12,5 @@ export const Button:React.FC<ButtonProps> = (props) => {
 
     return (
         <VSCodeButton onClick={onClick} className={className}>Commit</VSCodeButton>
-    )
+    );
 }

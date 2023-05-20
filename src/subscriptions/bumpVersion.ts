@@ -1,13 +1,16 @@
 import * as vscode from "vscode";
-import { VERSION_PREFIX } from "../config";
 import { readFile, writeFile, getFilePath } from "../helpers/file";
 import { commitVersion, getCommitMessages, getGitHost, getLatestTag } from "../helpers/git";
 import { COMMANDS } from "../constant";
+import { getPrefix } from "../helpers/prefix";
+
+const VERSION_PREFIX = getPrefix("webviewReact", "userApiVersion", "c4i2/v");
+
 
 const subscription = async (data: any) => {
-	const { version: customVersion, autoTag } = data;
+	const { version: customVersion, autoTag, filter } = data;
 	try {
-		const latestTag = await getLatestTag();
+		const latestTag = await getLatestTag();	
 
 		const [commitMessages, host] = await Promise.all([
 			getCommitMessages(latestTag.tag),
@@ -18,8 +21,22 @@ const subscription = async (data: any) => {
 		const fixes = [];
 		const chores = [];
 		const breakingChanges = [];
+		let filteredCommits = commitMessages;
 
-		for (const commit of commitMessages) {
+		if (filter !== "") {
+			filteredCommits = [];
+			for (const commit of commitMessages) {
+				const { footer } = commit;
+				for (const customFilter of filter) {
+					if (footer && footer[customFilter] !== undefined) {
+						filteredCommits.push(commit);
+					}
+				}
+
+			}
+		}
+		
+		for (const commit of filteredCommits) {
 			const { hash, type, scope, subject, isBreaking, footer } = commit;
 
 			let ticketUrl = `${host}/commit/${hash}`;
@@ -45,6 +62,8 @@ const subscription = async (data: any) => {
 				}
 			}
 		}
+
+		
 
 		let newVersion = customVersion;
 
