@@ -27,7 +27,7 @@ const linkOptions: DropDownOption[] = CONVENTION_LINK.map(option => ({
 type FileStatus = { status: string, fileName: string, isStaged: boolean };
 
 export const ConventionCommit = () => {
-  const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false, footerGen: ''});
+  const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false, footerGen: '', description: '' });
   const [fileChanges, setFileChanges] = useState<FileStatus[]>([]);
 
   const handleConventionPropChange = (key: string) => (e: any) => {
@@ -39,7 +39,7 @@ export const ConventionCommit = () => {
 
   const handleCommit = () => {
     vscode.postMessage<CommonMessage>({
-      type: "COMMON",
+      type: "git-commit",
       payload: convention
     });
     console.log(convention);
@@ -54,7 +54,7 @@ export const ConventionCommit = () => {
 
   useEffect(() => {
     vscode.postMessage<CommonMessage>({
-      type: "startup",
+      type: "git-status",
       payload: {}
     });
 

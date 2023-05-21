@@ -36,8 +36,15 @@ export class ConventionViewProvider implements BaseViewProvider {
       const payload = (message as CommonMessage).payload;
 
       switch (message.type) {
-        case 'startup': {
-          // vscode.commands.executeCommand(COMMANDS.GET_SOURCE_CHANGE);
+        case 'git-commit': {
+          vscode.commands.executeCommand(COMMANDS.COMMIT, payload).then(() => {
+            getGitStatus().then(statuses => {
+              this.postMessageToWebview({ type: 'git-status', statuses });
+            });
+          });
+          break;
+        }
+        case 'git-status': {
           getGitStatus().then(statuses => {
             this.postMessageToWebview({ type: 'git-status', statuses });
           });
