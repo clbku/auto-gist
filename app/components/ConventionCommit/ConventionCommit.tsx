@@ -131,7 +131,7 @@ export const ConventionCommit = () => {
 
     {/* <VSCodeButton onClick={handleCommit} className="w-100">Commit</VSCodeButton> */}
     <div className="w-100 px-4">
-      <Button onClick={handleCommit} className='w-100' />
+      <Button onClick={handleCommit} className='w-100' text="Commit" />
     </div>
 
     {stagedChanges.length > 0 && (

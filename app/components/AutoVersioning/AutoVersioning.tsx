@@ -5,20 +5,20 @@ import { CommonMessage } from '../../../src/type';
 import { TextField } from '../TextField/TextField';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { SmartTextArea } from '../SmathTextArea/SmathTextArea';
-import {removeSpaces} from '../../../src/helpers/git';
 import { Button } from '../Button/Button';
 
 const CONVENTION_TYPE = ["fix", "feat", "docs", "style", "refactor", "perf", "build", "ci", "chore", "revert"];
 
 export const AutoVersioning = () => {
   const [version, setVersion] = useState('');
+  const [versionPrefix, setVersionPrefix] = useState('');
   const [autoTag, setAutoTag] = useState(false);
   const [filter, setFilter] = useState('');
 
   const handleGenerate = () => {
     vscode.postMessage<CommonMessage>({
       type: "COMMON",
-      payload: { version, autoTag, filter }
+      payload: { version, autoTag, filter, versionPrefix }
     });
   };
 
@@ -49,20 +49,26 @@ export const AutoVersioning = () => {
   };
 
   return <>
-    <div className="my-2">
-      <label className="form-label">Build version</label>
+    <div className="m-4">
+      <label className="form-label">Build Version</label>
       <TextField className={'w-100'} onChange={e => setVersion(e.target.currentValue)} />
     </div>
-    <div className="my-2" style={{ display: "flex", alignItems: "center" }}>
+    <div className="m-4">
+      <label className="form-label">Version Prefix</label>
+      <TextField className={'w-100'} onChange={e => setVersionPrefix(e.target.currentValue)} />
+    </div>
+    <div className="m-4" style={{ display: "flex", alignItems: "center" }}>
       <label style={{ marginRight: 4 }} className='form-label'>Auto tag?</label>
       <Checkbox isBreaking={autoTag} onChange={handleCheckbox} />
     </div>
     
-    <div className="my-2">
+    <div className="m-4">
         <label className="form-label">Footer Filter</label>
         <SmartTextArea minRows={2} onChange={handleChangeInput}/>
     </div>
     {/* <VSCodeButton onClick={handleGenerate} className="w-100">Generate change log</VSCodeButton> */}
-    <Button onClick={handleGenerate} className={'w-100'}/>
+    <div className="w-100 px-4">
+      <Button onClick={handleGenerate} className={'w-100'} text="Generate Changelog" />
+    </div>
   </>;
 };

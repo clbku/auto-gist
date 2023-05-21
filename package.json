@@ -44,12 +44,12 @@
       }
     ],
     "configuration": {
-      "title": "Version Prefix",
+      "title": "AutoGist ",
       "properties": {
         "webviewReact.userApiVersion": {
           "type": "string",
           "default": "",
-          "pattern": "^(|[a-zA-Z0-9]+\\/v)$",
+          "pattern": "^(|[a-zA-Z0-9\\/]*)$",
           "errorMessage": "Invalid!"
         }
       }

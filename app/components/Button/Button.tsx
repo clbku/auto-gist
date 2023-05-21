@@ -5,17 +5,18 @@ type ButtonProps = {
     style?: CSSProperties
     className?: string;
     title?: string;
+    text: string
 
     onClick: () => void,
 };
 
-type IconButtonProps = ButtonProps & {
+type IconButtonProps = Omit<ButtonProps, 'text'> & {
     icon: string;
 };
 
 export const Button:React.FC<ButtonProps> = (props) => {
     return (
-        <VSCodeButton {...props}>Commit</VSCodeButton>
+        <VSCodeButton {...props}>{props.text}</VSCodeButton>
     );
 };
 
