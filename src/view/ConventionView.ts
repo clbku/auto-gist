@@ -2,10 +2,12 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { CommonMessage, Message } from '../type';
 import { COMMANDS, VIEWS } from '../constant';
+import { BaseViewProvider } from '../core/view/BaseViewProvider';
+import { getGitStatus, gitAddChanges, gitResetChanges } from '../helpers/git';
 
-
-export class ConventionViewProvider implements vscode.WebviewViewProvider {
+export class ConventionViewProvider implements BaseViewProvider {
   public static readonly viewType = VIEWS.COMMIT;
+  public static currentView: vscode.WebviewView;
 
   private _view?: vscode.WebviewView;
 
@@ -13,6 +15,8 @@ export class ConventionViewProvider implements vscode.WebviewViewProvider {
 
   public resolveWebviewView(webviewView: vscode.WebviewView): void {
     this._view = webviewView;
+    ConventionViewProvider.currentView = webviewView;
+
     this._view.webview.options = {
       enableScripts: true,
       localResourceRoots: [
@@ -23,10 +27,38 @@ export class ConventionViewProvider implements vscode.WebviewViewProvider {
 
     this._view.webview.onDidReceiveMessage((message: Message) => {
       const payload = (message as CommonMessage).payload;
-      vscode.commands.executeCommand(COMMANDS.COMMIT, payload);
+
+      switch (message.type) {
+        case 'startup': {
+          // vscode.commands.executeCommand(COMMANDS.GET_SOURCE_CHANGE);
+          getGitStatus().then(statuses => {
+            this.postMessageToWebview({ type: 'git-status', statuses });
+          });
+          break;
+        }
+        case 'stage-changes': {
+          gitAddChanges(payload.fileName).then(statuses => {
+            this.postMessageToWebview({ type: 'git-status', statuses });
+          });
+          break;
+        }
+        case 'unstage-changes': {
+          gitResetChanges(payload.fileName).then(statuses => {
+            this.postMessageToWebview({ type: 'git-status', statuses });
+          });
+          break;
+        }
+        default: {
+        }
+      }
     });
 
     this._update();
+  }
+
+  public postMessageToWebview<T extends Message = Message>(message: T) {
+    // post message from extension to webview
+    this._view?.webview.postMessage(message);
   }
 
   private _update() {

@@ -2,23 +2,24 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { CommonMessage, Message } from '../type';
 import { COMMANDS, VIEWS } from '../constant';
+import { BaseViewProvider } from '../core/view/BaseViewProvider';
 
-
-export class AutoVersioningProvider implements vscode.WebviewViewProvider {
-
+export class AutoVersioningProvider implements BaseViewProvider {
   public static readonly viewType = VIEWS.BUMP_VERSION;
 
   private _view?: vscode.WebviewView;
 
-  constructor(private readonly _context: vscode.ExtensionContext) {
-    
+  constructor(private readonly _context: vscode.ExtensionContext) {}
+
+  postMessageToWebview(message: Message): void {
+    throw new Error('Method not implemented.');
   }
 
   public resolveWebviewView(webviewView: vscode.WebviewView): void {
     this._view = webviewView;
     this._view.webview.options = {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app'))], 
+      localResourceRoots: [vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app'))],
     };
 
     this._view.webview.onDidReceiveMessage((message: Message) => {
@@ -35,11 +36,11 @@ export class AutoVersioningProvider implements vscode.WebviewViewProvider {
     }
   }
 
-  private _getHtmlForWebview() {   
+  private _getHtmlForWebview() {
     const bundleScriptPath = this._view?.webview.asWebviewUri(
       vscode.Uri.file(path.join(this._context.extensionPath, 'out', 'app', 'bundle.js'))
-    ); 
-    
+    );
+
     return `<!DOCTYPE html>
               <html lang="en">
               <head>

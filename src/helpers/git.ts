@@ -147,4 +147,52 @@ export const removeSpaces = (key: string) : string => {
     return firstWord.toLowerCase() + remainingWords.join("");
 };
 
+export const getGitStatus = async () => {
+  try {
+    const stdout = await execGit(`git status -s`);
+
+    const statuses = stdout.split('\n');
+
+    return statuses.map(line => {
+      const splitted = line.trim().split(' ');
+
+      let status: string;
+      let fileName: string;
+      let isStaged: boolean;
+
+      if (splitted.length === 2) {
+        status = splitted[0];
+        fileName = splitted[1];
+        isStaged = false;
+      } else {
+        status = splitted[0];
+        fileName = splitted[2];
+        isStaged = true;
+      }
+
+      return { status: status === '??' ? 'A' : status, fileName, isStaged };
+    });
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const gitAddChanges = async (fileName = '-A') => {
+  try {
+    await execGit(`git add ${fileName}`);
+    return await getGitStatus();
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const gitResetChanges = async (fileName = '') => {
+  try {
+    await execGit(`git reset ${fileName ? `-- ${fileName}` : ''}`);
+    return await getGitStatus();
+  } catch (e) {
+    throw e;
+  }
+};
+  
 

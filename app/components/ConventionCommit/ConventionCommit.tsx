@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { VSCodeButton, VSCodeCheckbox, VSCodeDropdown, VSCodeOption, VSCodeRadio, VSCodeRadioGroup, VSCodeTextArea, VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
 import { useState } from "react";
 import { CommonMessage } from '../../../src/type';
@@ -9,6 +9,7 @@ import { Checkbox } from '../Checkbox/Checkbox';
 import { DropDownOption } from '../DropDown/DropDown';
 import { DropDown } from '../DropDown/DropDown';
 import { Button } from '../Button/Button';
+import { FileItem } from './FileItem';
 
 const CONVENTION_TYPE = ["fix", "feat", "docs", "style", "refactor", "perf", "build", "ci", "chore", "revert"];
 const CONVENTION_LINK = ['None', 'Jira', 'Mantis'];
@@ -23,8 +24,11 @@ const linkOptions: DropDownOption[] = CONVENTION_LINK.map(option => ({
   value: option
 }));
 
+type FileStatus = { status: string, fileName: string, isStaged: boolean };
+
 export const ConventionCommit = () => {
   const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false, footerGen: ''});
+  const [fileChanges, setFileChanges] = useState<FileStatus[]>([]);
 
   const handleConventionPropChange = (key: string) => (e: any) => {
     setConvention({
@@ -38,7 +42,7 @@ export const ConventionCommit = () => {
       type: "COMMON",
       payload: convention
     });
-    console.log(convention)
+    console.log(convention);
   };
 
   const handleOnChange = () => {
@@ -48,22 +52,55 @@ export const ConventionCommit = () => {
     });
   };
 
+  useEffect(() => {
+    vscode.postMessage<CommonMessage>({
+      type: "startup",
+      payload: {}
+    });
+
+    window.addEventListener('message', (e) => {
+      if (e.data.type === 'git-status') {
+        setFileChanges(e.data.statuses.filter((status: FileStatus) => status.status !== ''));
+      }
+    });
+  }, []);
+
+  const handleStageChanges = (fileName?: string) => {
+    vscode.postMessage<CommonMessage>({
+      type: "stage-changes",
+      payload: {
+        fileName
+      }
+    });
+  };
+
+  const handleUnStageChanges = (fileName?: string) => {
+    vscode.postMessage<CommonMessage>({
+      type: "unstage-changes",
+      payload: {
+        fileName
+      }
+    });
+  };
+
+  const stagedChanges = fileChanges.filter(change => change.isStaged);
+  const unstageChanges = fileChanges.filter(change => !change.isStaged);
 
   return <>
-    <div className="my-2">
+    <div className="m-4">
       <label className="form-label">Type</label>
       <DropDown options={options} onChange={handleConventionPropChange('type')} className={'w-100'} />
     </div>
-    <div className="my-2">
+    <div className="m-4">
       <label className="form-label">Scope</label>
       <TextField className={'w-100'} onChange={handleConventionPropChange('scope')} />
     </div>
-    <div className="my-2">
+    <div className="m-4">
       <label className="form-label">Subject</label>
       <TextField className={'w-100'} onChange={handleConventionPropChange('subject')} />
     </div>
 
-    <div className="my-2" style={{ display: "flex", alignItems: "center" }}>
+    <div className="m-4" style={{ display: "flex", alignItems: "center" }}>
       <label style={{ marginRight: 4 }} className='form-label'>Is breaking change?</label>
       <Checkbox isBreaking={convention.isBreaking} onChange={handleOnChange} />
     </div>
@@ -93,6 +130,40 @@ export const ConventionCommit = () => {
     </Collapsible>
 
     {/* <VSCodeButton onClick={handleCommit} className="w-100">Commit</VSCodeButton> */}
-    <Button onClick={handleCommit} className={'w-100'}/>
+    <div className="w-100 px-4">
+      <Button onClick={handleCommit} className='w-100' />
+    </div>
+
+    {stagedChanges.length > 0 && (
+      <Collapsible
+        title={`Staged Changes (${stagedChanges.length})`}
+        collapsed={false}
+        actions={[{
+          icon: 'remove',
+          onClick: () => handleUnStageChanges()
+        }]}
+      >
+        {fileChanges.map(change => change.isStaged && (
+          <FileItem {...change} onUnstageChanges={handleUnStageChanges} />
+        ))}
+      </Collapsible>
+    )}
+
+    {
+      unstageChanges.length > 0 && (
+        <Collapsible
+          title={`Changes (${unstageChanges.length})`}
+          collapsed={false}
+          actions={[{
+            icon: "plus",
+            onClick: () => handleStageChanges()
+          }]}
+        >
+          {fileChanges.map(change => !change.isStaged && (
+            <FileItem {...change} onStageChanges={handleStageChanges} />
+          ))}
+        </Collapsible>
+      )
+    }
   </>;
 };

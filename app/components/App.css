@@ -19,11 +19,29 @@ label.form-label {
   margin-bottom: 8px;
 }
 
+.m-2 {
+  margin: 4px;
+}
+
+.m-4 {
+  margin: 8px;
+}
+
+.px-4 {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
 .w-100 {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .icon {
   display: flex;
   align-items: center;
+}
+
+.sub-text {
+
 }

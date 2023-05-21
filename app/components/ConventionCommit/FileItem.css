@@ -1,0 +1,36 @@
+.file-item {
+  padding: 2px 0px 2px 4px;
+  margin: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.file-item__actions {
+  visibility: hidden;
+}
+
+.file-item:hover {
+  background: #80808033
+}
+
+.file-item:hover .file-item__actions {
+  visibility: visible;
+}
+
+.file-item__status {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.file-item__status--D {
+  color: var(--vscode-gitDecoration-deletedResourceForeground);
+}
+
+.file-item__status--A, .file-item__status--U {
+  color: var(--vscode-gitDecoration-untrackedResourceForeground)
+}
+
+.file-item__status--M {
+  color: var(--vscode-gitDecoration-modifiedResourceForeground)
+}

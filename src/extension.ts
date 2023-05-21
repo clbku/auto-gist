@@ -5,19 +5,16 @@ import { ConventionViewProvider } from './view/ConventionView';
 import { AutoVersioningProvider } from './view/AutoVersioningView';
 import { GitgraphPanel } from './view/GitGraphView';
 import { COMMANDS } from './constant';
+import { Message } from './type';
+import { BaseViewProvider } from './core/view/BaseViewProvider';
 
 const cats = {
   'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-  'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif'
+  'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
 };
 
-
 export function activate(context: vscode.ExtensionContext) {
-
-	context.subscriptions.push(
-    bumpVersion, 
-    conventionCommit
-  );
+  context.subscriptions.push(bumpVersion, conventionCommit);
 
   context.subscriptions.push(
     vscode.commands.registerCommand(COMMANDS.GIT_GRAPH, () => {
@@ -29,9 +26,19 @@ export function activate(context: vscode.ExtensionContext) {
   const autoVersioningProvider = new AutoVersioningProvider(context);
 
   context.subscriptions.push(
-    vscode.window.registerWebviewViewProvider(ConventionViewProvider.viewType, conventionViewProvider),
-    vscode.window.registerWebviewViewProvider(AutoVersioningProvider.viewType, autoVersioningProvider),
+    vscode.window.registerWebviewViewProvider(
+      ConventionViewProvider.viewType,
+      conventionViewProvider
+    ),
+    vscode.window.registerWebviewViewProvider(
+      AutoVersioningProvider.viewType,
+      autoVersioningProvider
+    )
   );
+}
+
+function postMessageToWebView(provider: BaseViewProvider, payload: Message) {
+  provider.postMessageToWebview(payload);
 }
 
 export function deactivate() {}

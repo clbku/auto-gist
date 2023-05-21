@@ -1,7 +1,7 @@
 export enum COMMANDS {
-  COMMIT = "auto-gist.commit",
-  BUMP_VERSION = "auto-gist.bump",
-  GIT_GRAPH = "auto-gist.git-graph",
+  COMMIT = 'auto-gist.commit',
+  BUMP_VERSION = 'auto-gist.bump',
+  GIT_GRAPH = 'auto-gist.git-graph',
 }
 
 export enum VIEWS {

@@ -9,15 +9,14 @@ export type Commit = {
 
 export type CommitType = "feat" | "fix" | "docs" | "style" | "refactor" | "perf" | "test" | "build" | "ci" | "chore" | "revert";
 
-export type MessageType = 'RELOAD' | 'COMMON';
 
 export interface Message {
-  type: MessageType;
+  type: string;
   payload?: any;
 }
 
 export interface CommonMessage extends Message {
-  type: 'COMMON';
+  type: string;
   payload: any;
 }
 

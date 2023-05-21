@@ -1,4 +1,6 @@
-.collapse-button {
+.collapse-button, 
+.collapse-button .collapse-button__title, 
+.collapse-button .collapse-button__actions {
   display: flex;
   align-items: center;
   cursor: pointer;

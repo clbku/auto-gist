@@ -14,6 +14,7 @@ export const AutoVersioning = () => {
   const [version, setVersion] = useState('');
   const [autoTag, setAutoTag] = useState(false);
   const [filter, setFilter] = useState('');
+
   const handleGenerate = () => {
     vscode.postMessage<CommonMessage>({
       type: "COMMON",
