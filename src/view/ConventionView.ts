@@ -3,7 +3,7 @@ import * as path from 'path';
 import { CommonMessage, Message } from '../type';
 import { COMMANDS, VIEWS } from '../constant';
 import { BaseViewProvider } from '../core/view/BaseViewProvider';
-import { getGitStatus, gitAddChanges, gitResetChanges } from '../helpers/git';
+import { getGitStatus, gitAddChanges, gitDiscardChange, gitResetChanges } from '../helpers/git';
 
 export class ConventionViewProvider implements BaseViewProvider {
   public static readonly viewType = VIEWS.COMMIT;
@@ -48,11 +48,21 @@ export class ConventionViewProvider implements BaseViewProvider {
           });
           break;
         }
+        case 'discard-changes': {
+          vscode.window
+            .showInformationMessage(`Discard changes?`, { modal: true }, { title: 'Discard' })
+            .then(answer => {
+              if (answer) {
+                gitDiscardChange(payload.fileName).then(statuses => {
+                  this.postMessageToWebview({ type: 'git-status', statuses });
+                });
+              }
+            });
+        }
         default: {
         }
       }
     });
-
     this._update();
   }
 

@@ -25,7 +25,7 @@ export const FileItem: React.FC<FileItemProps> = (props) => {
         <span style={{ textDecoration: status === 'D' ? 'line-through' : '' }}>{fileName}</span>
       </div>
       <div className="file-item__actions">
-        {onDiscardChanges && <IconButton icon="discard" onClick={() => { }} title="Discard" />}
+        {onDiscardChanges && <IconButton icon="discard" onClick={() => onDiscardChanges(fileName)} title="Discard" />}
         {
           isStaged
             ? (onUnstageChanges && <IconButton icon="remove" onClick={() => onUnstageChanges(fileName)} title="Unstage Changes" />)

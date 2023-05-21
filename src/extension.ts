@@ -37,8 +37,4 @@ export function activate(context: vscode.ExtensionContext) {
   );
 }
 
-function postMessageToWebView(provider: BaseViewProvider, payload: Message) {
-  provider.postMessageToWebview(payload);
-}
-
 export function deactivate() {}

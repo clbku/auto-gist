@@ -192,3 +192,17 @@ export const gitResetChanges = async (fileName = '') => {
     throw e;
   }
 };
+
+export const gitDiscardChange = async (fileName = '.') => {
+  try {
+    await execGit(`git restore ${fileName}`);
+
+    if (fileName === '.') {
+      await execGit(`git clean -df`);
+    }
+
+    return await getGitStatus();
+  } catch (e) {
+    throw e;
+  }
+};

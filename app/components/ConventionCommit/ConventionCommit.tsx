@@ -83,6 +83,15 @@ export const ConventionCommit = () => {
     });
   };
 
+  const handleDiscardChanges = (fileName?: string) => {
+    vscode.postMessage<CommonMessage>({
+      type: "discard-changes",
+      payload: {
+        fileName
+      }
+    });
+  };
+
   const stagedChanges = fileChanges.filter(change => change.isStaged);
   const unstageChanges = fileChanges.filter(change => !change.isStaged);
 
@@ -154,13 +163,23 @@ export const ConventionCommit = () => {
         <Collapsible
           title={`Changes (${unstageChanges.length})`}
           collapsed={false}
-          actions={[{
-            icon: "plus",
-            onClick: () => handleStageChanges()
-          }]}
+          actions={[
+            {
+              icon: "discard",
+              onClick: () => handleDiscardChanges()
+            },
+            {
+              icon: "plus",
+              onClick: () => handleStageChanges()
+            },
+          ]}
         >
           {fileChanges.map(change => !change.isStaged && (
-            <FileItem {...change} onStageChanges={handleStageChanges} />
+            <FileItem
+              {...change}
+              onStageChanges={handleStageChanges}
+              onDiscardChanges={handleDiscardChanges}
+            />
           ))}
         </Collapsible>
       )
