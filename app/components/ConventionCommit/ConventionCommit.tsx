@@ -92,6 +92,24 @@ export const ConventionCommit = () => {
     });
   };
 
+  const handleCompareChanges = (fileName: string) => {
+    vscode.postMessage<CommonMessage>({
+      type: "compare-changes",
+      payload: {
+        fileName
+      }
+    });
+  };
+
+  const handleOpenFile = (fileName: string) => {
+    vscode.postMessage<CommonMessage>({
+      type: "open-file",
+      payload: {
+        fileName
+      }
+    });
+  };
+
   const stagedChanges = fileChanges.filter(change => change.isStaged);
   const unstageChanges = fileChanges.filter(change => !change.isStaged);
 
@@ -153,7 +171,11 @@ export const ConventionCommit = () => {
         }]}
       >
         {fileChanges.map(change => change.isStaged && (
-          <FileItem {...change} onUnstageChanges={handleUnStageChanges} />
+          <FileItem
+            {...change}
+            onUnstageChanges={handleUnStageChanges}
+            onOpenFile={handleOpenFile}
+          />
         ))}
       </Collapsible>
     )}
@@ -179,6 +201,8 @@ export const ConventionCommit = () => {
               {...change}
               onStageChanges={handleStageChanges}
               onDiscardChanges={handleDiscardChanges}
+              onCompareChanges={handleCompareChanges}
+              onOpenFile={handleOpenFile}
             />
           ))}
         </Collapsible>

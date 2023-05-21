@@ -3,7 +3,14 @@ import * as path from 'path';
 import { CommonMessage, Message } from '../type';
 import { COMMANDS, VIEWS } from '../constant';
 import { BaseViewProvider } from '../core/view/BaseViewProvider';
-import { getGitStatus, gitAddChanges, gitDiscardChange, gitResetChanges } from '../helpers/git';
+import {
+  getFileFromCommit,
+  getGitStatus,
+  gitAddChanges,
+  gitDiscardChange,
+  gitResetChanges,
+} from '../helpers/git';
+import { getFilePath } from '../helpers/file';
 
 export class ConventionViewProvider implements BaseViewProvider {
   public static readonly viewType = VIEWS.COMMIT;
@@ -58,6 +65,23 @@ export class ConventionViewProvider implements BaseViewProvider {
                 });
               }
             });
+          break;
+        }
+        case 'compare-changes': {
+          getFileFromCommit(payload.fileName).then(path => {
+            vscode.commands.executeCommand(
+              'vscode.diff',
+              vscode.Uri.file(path),
+              vscode.Uri.file(getFilePath(payload.fileName)),
+              'Compare Changes',
+              {}
+            );
+          });
+          break;
+        }
+        case 'open-file': {
+          vscode.window.showTextDocument(vscode.Uri.file(getFilePath(payload.fileName)));
+          break;
         }
         default: {
         }

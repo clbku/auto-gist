@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import {workspace} from "vscode";
 import * as path from 'path';
+import * as tmp from 'tmp';
 
 export const getRootPath = () => {
   if (!workspace.workspaceFolders?.length) {
@@ -34,9 +35,25 @@ export const readFile = (fileName: string) => {
   return fs.readFileSync(filePath, 'utf-8');
 };
 
-export const writeFile = (fileName: string, data: string) => {
+export const writeFile = (fileName: any, data: string) => {
   const filePath = getFilePath(fileName);
 
   return fs.writeFileSync(filePath, data);
 };
 
+export const createTempFile = (content: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    tmp.file({ keep: false }, (err, path, fd) => {
+      if (err) {
+        reject(err);
+      }
+      fs.write(fd, content, err => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(path);
+      });
+    });
+  });
+};
