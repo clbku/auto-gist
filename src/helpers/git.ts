@@ -1,7 +1,8 @@
 import { exec } from 'child_process';
 import * as tmp from 'tmp';
+import * as path from 'path';
 import { Commit, CommitType } from '../type';
-import { createTempFile, getRootPath } from './file';
+import { getRootPath } from './file';
 
 export const execGit = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -211,7 +212,13 @@ export const gitDiscardChange = async (fileName = '.') => {
 export const getFileFromCommit = async (fileName: string, commit = 'HEAD') => {
   try {
     const fileContent = await execGit(`git show ${commit}:${fileName}`);
-    return await createTempFile(fileContent);
+    // return await createTempFile(
+    //   fileContent,
+    //   path.extname(fileName),
+    //   getRootPath() + '/' + path.dirname(fileName)
+    // );
+
+    return fileContent;
   } catch (e) {
     throw e;
   }

@@ -75,15 +75,20 @@ export class ConventionViewProvider implements BaseViewProvider {
           break;
         }
         case 'compare-changes': {
-          getFileFromCommit(payload.fileName).then(path => {
-            vscode.commands.executeCommand(
-              'vscode.diff',
-              vscode.Uri.file(path),
-              vscode.Uri.file(getFilePath(payload.fileName)),
-              'Compare Changes',
-              {}
-            );
-          });
+          const gitFileProvider = new (class implements vscode.TextDocumentContentProvider {
+            provideTextDocumentContent() {
+              return getFileFromCommit(payload.fileName);
+            }
+          })();
+
+          vscode.workspace.registerTextDocumentContentProvider('git-file', gitFileProvider);
+
+          vscode.commands.executeCommand(
+            'vscode.diff',
+            vscode.Uri.parse(`git-file:${payload.fileName}.tsx`),
+            vscode.Uri.file(getFilePath(payload.fileName))
+          );
+
           break;
         }
         case 'open-file': {
