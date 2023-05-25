@@ -10,6 +10,8 @@ import { DropDownOption } from '../DropDown/DropDown';
 import { DropDown } from '../DropDown/DropDown';
 import { Button } from '../Button/Button';
 import { FileItem } from './FileItem';
+import { Row } from '../Row/Row';
+import { Col } from '../Col/Col';
 
 const CONVENTION_TYPE = ["fix", "feat", "docs", "style", "refactor", "perf", "build", "ci", "chore", "revert"];
 const CONVENTION_LINK = ['None', 'Jira', 'Mantis'];
@@ -38,10 +40,10 @@ export const ConventionCommit = () => {
   };
 
   const handleCommit = () => {
-    vscode.postMessage<CommonMessage>({
-      type: "git-commit",
-      payload: convention
-    });
+    // vscode.postMessage<CommonMessage>({
+    //   type: "git-commit",
+    //   payload: convention
+    // });
     console.log(convention);
   };
 
@@ -114,14 +116,16 @@ export const ConventionCommit = () => {
   const unstageChanges = fileChanges.filter(change => !change.isStaged);
 
   return <>
-    <div className="m-4">
-      <label className="form-label">Type</label>
-      <DropDown options={options} onChange={handleConventionPropChange('type')} className={'w-100'} />
-    </div>
-    <div className="m-4">
-      <label className="form-label">Scope</label>
-      <TextField className={'w-100'} onChange={handleConventionPropChange('scope')} />
-    </div>
+    <Row className={'row m-2'}>
+      <Col className='m-2 col-1'>
+        <label className="form-label">Type</label>
+        <DropDown options={options} onChange={handleConventionPropChange('type')} className={'w-100'} />
+      </Col>
+      <Col className='m-2 col-2'>
+        <label className="form-label">Scope</label>
+        <TextField className={'w-100'} onChange={handleConventionPropChange('scope')} />
+      </Col>
+    </Row>
     <div className="m-4">
       <label className="form-label">Subject</label>
       <TextField className={'w-100'} onChange={handleConventionPropChange('subject')} />

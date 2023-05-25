@@ -42,6 +42,12 @@ label.form-label {
   align-items: center;
 }
 
-.sub-text {
+.type-scope {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 
+.type-scope > div {
+  flex: 1;
 }

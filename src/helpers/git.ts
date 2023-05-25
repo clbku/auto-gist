@@ -1,5 +1,4 @@
 import { exec } from 'child_process';
-import * as tmp from 'tmp';
 import * as path from 'path';
 import { Commit, CommitType } from '../type';
 import { getRootPath } from './file';
