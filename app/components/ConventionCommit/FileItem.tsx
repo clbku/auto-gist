@@ -22,9 +22,9 @@ export const FileItem: React.FC<FileItemProps> = (props) => {
 
   return (
     <div className="file-item">
-      <div>
-        {renderStatusTag()}
-        <span style={{ textDecoration: status === 'D' ? 'line-through' : '' }}>{fileName}</span>
+      {renderStatusTag()}
+      <div className="file-item__title">
+        <span style={{ textDecoration: status === 'D' ? 'line-through' : '' }}>{"gitDecorationmodifiedResourceForeground"}</span>
       </div>
       <div className="file-item__actions">
         {onOpenFile && <IconButton icon="go-to-file" onClick={() => onOpenFile(fileName)} title="Open file" />}
