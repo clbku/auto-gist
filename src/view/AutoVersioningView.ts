@@ -24,6 +24,7 @@ export class AutoVersioningProvider implements BaseViewProvider {
 
     this._view.webview.onDidReceiveMessage((message: Message) => {
       const payload = (message as CommonMessage).payload;
+      console.log(payload);
       vscode.commands.executeCommand(COMMANDS.BUMP_VERSION, payload);
     });
 

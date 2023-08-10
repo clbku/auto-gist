@@ -5,6 +5,7 @@ import { COMMANDS, VIEWS } from '../constant';
 import { BaseViewProvider } from '../core/view/BaseViewProvider';
 import {
   getFileFromCommit,
+  getGitModules,
   getGitStatus,
   gitAddChanges,
   gitDiscardChange,
@@ -38,26 +39,32 @@ export class ConventionViewProvider implements BaseViewProvider {
       switch (message.type) {
         case 'git-commit': {
           vscode.commands.executeCommand(COMMANDS.COMMIT, payload).then(() => {
-            getGitStatus().then(statuses => {
+            getGitStatus(payload.convention.module).then(statuses => {
               this.postMessageToWebview({ type: 'git-status', statuses });
             });
           });
           break;
         }
         case 'git-status': {
-          getGitStatus().then(statuses => {
+          getGitStatus(payload.module).then(statuses => {
             this.postMessageToWebview({ type: 'git-status', statuses });
           });
           break;
         }
+        case 'git-modules': {
+          getGitModules().then(modules => {
+            this.postMessageToWebview({ type: 'git-modules', modules });
+          });
+          break;
+        }
         case 'stage-changes': {
-          gitAddChanges(payload.fileName).then(statuses => {
+          gitAddChanges(payload.fileName, payload.module).then(statuses => {
             this.postMessageToWebview({ type: 'git-status', statuses });
           });
           break;
         }
         case 'unstage-changes': {
-          gitResetChanges(payload.fileName).then(statuses => {
+          gitResetChanges(payload.fileName, payload.module).then(statuses => {
             this.postMessageToWebview({ type: 'git-status', statuses });
           });
           break;
@@ -67,7 +74,7 @@ export class ConventionViewProvider implements BaseViewProvider {
             .showInformationMessage(`Discard changes?`, { modal: true }, { title: 'Discard' })
             .then(answer => {
               if (answer) {
-                gitDiscardChange(payload.fileName).then(statuses => {
+                gitDiscardChange(payload.fileName, payload.module).then(statuses => {
                   this.postMessageToWebview({ type: 'git-status', statuses });
                 });
               }

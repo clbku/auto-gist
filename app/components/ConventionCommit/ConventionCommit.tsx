@@ -27,8 +27,9 @@ const linkOptions: DropDownOption[] = CONVENTION_LINK.map(option => ({
 type FileStatus = { status: string, fileName: string, isStaged: boolean };
 
 export const ConventionCommit = () => {
-  const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false, footerGen: '', description: '' });
+  const [convention, setConvention] = useState<any>({ type: 'fix', isBreaking: false, footerGen: '', description: '', module: 'main' });
   const [fileChanges, setFileChanges] = useState<FileStatus[]>([]);
+  const [modules, setModules] = useState<string[]>([]);
 
   const handleConventionPropChange = (key: string) => (e: any) => {
     setConvention({
@@ -40,7 +41,7 @@ export const ConventionCommit = () => {
   const handleCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "git-commit",
-      payload: convention
+      payload: {convention: convention, push: true}
     });
     console.log(convention);
   };
@@ -55,6 +56,11 @@ export const ConventionCommit = () => {
   useEffect(() => {
     vscode.postMessage<CommonMessage>({
       type: "git-status",
+      payload: {module: 'main'}
+    });
+
+    vscode.postMessage<CommonMessage>({
+      type: "git-modules",
       payload: {}
     });
 
@@ -62,14 +68,25 @@ export const ConventionCommit = () => {
       if (e.data.type === 'git-status') {
         setFileChanges(e.data.statuses.filter((status: FileStatus) => status.status !== ''));
       }
+      if (e.data.type === 'git-modules') {
+        setModules(['main', ...e.data.modules]);
+      }
     });
   }, []);
+
+  useEffect(() => {
+    vscode.postMessage<CommonMessage>({
+      type: "git-status",
+      payload: {module: convention.module}
+    });
+  }, [convention.module]);
 
   const handleStageChanges = (fileName?: string) => {
     vscode.postMessage<CommonMessage>({
       type: "stage-changes",
       payload: {
-        fileName
+        fileName,
+        module: convention.module 
       }
     });
   };
@@ -78,7 +95,8 @@ export const ConventionCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "unstage-changes",
       payload: {
-        fileName
+        fileName,
+        module: convention.module
       }
     });
   };
@@ -87,7 +105,8 @@ export const ConventionCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "discard-changes",
       payload: {
-        fileName
+        fileName,
+        module: convention.module
       }
     });
   };
@@ -96,7 +115,8 @@ export const ConventionCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "compare-changes",
       payload: {
-        fileName
+        fileName,
+        module: convention.module
       }
     });
   };
@@ -105,7 +125,8 @@ export const ConventionCommit = () => {
     vscode.postMessage<CommonMessage>({
       type: "open-file",
       payload: {
-        fileName
+        fileName,
+        module: convention.module
       }
     });
   };
@@ -114,6 +135,10 @@ export const ConventionCommit = () => {
   const unstageChanges = fileChanges.filter(change => !change.isStaged);
 
   return <>
+    <div className="m-4">
+      <label className="form-label">Module</label>
+      <DropDown options={modules.map(module => ({key: module, value: module}))} onChange={handleConventionPropChange('module')} className={'w-100'}/>
+    </div>
     <div className="m-4">
       <label className="form-label">Type</label>
       <DropDown options={options} onChange={handleConventionPropChange('type')} className={'w-100'} />
@@ -158,7 +183,8 @@ export const ConventionCommit = () => {
 
     {/* <VSCodeButton onClick={handleCommit} className="w-100">Commit</VSCodeButton> */}
     <div className="w-100 px-4">
-      <Button onClick={handleCommit} className='w-100' text="Commit" />
+      {/* <Button onClick={handleCommit} className='w-100' text="Commit" /> */}
+      <Button onClick={handleCommit} className='w-100' text="Commit & Push" />
     </div>
 
     {stagedChanges.length > 0 && (

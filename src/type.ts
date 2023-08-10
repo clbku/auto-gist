@@ -1,10 +1,11 @@
 export type Commit = {
-  hash: string,
-  type: CommitType,
-  scope?: string,
-  subject: string,
-  isBreaking?: boolean,
-  footer?: {[key: string]: string}
+  hash: string;
+  type: CommitType;
+  scope?: string;
+  subject: string;
+  isBreaking?: boolean;
+  footer?: { [key: string]: string };
+  submodule?: string;
 };
 
 export type CommitType = "feat" | "fix" | "docs" | "style" | "refactor" | "perf" | "test" | "build" | "ci" | "chore" | "revert";

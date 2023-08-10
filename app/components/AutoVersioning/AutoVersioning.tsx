@@ -13,7 +13,7 @@ export const AutoVersioning = () => {
   const [version, setVersion] = useState('');
   const [versionPrefix, setVersionPrefix] = useState('');
   const [autoTag, setAutoTag] = useState(false);
-  const [filter, setFilter] = useState('');
+  const [filter, setFilter] = useState<string[]>([]);
 
   const handleGenerate = () => {
     vscode.postMessage<CommonMessage>({
@@ -29,12 +29,13 @@ export const AutoVersioning = () => {
   const handleChangeInput = (e: any) => {
 
     const filterList = e.target.value;
-
+    if (!filterList) {
+      setFilter([]);
+    }
     handleChange(filterList);
   };
 
   const handleChange = (list: any) => {
-    console.log(list.split('\n'));
     let result: any= [];
     for (const key of list.split('\n')) {
       const words = key.split("-");
@@ -43,9 +44,7 @@ export const AutoVersioning = () => {
       const remainingWords = words.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1));
       result.push(firstWord.toLowerCase() + remainingWords.join(""));
     }
-    console.log(result);
     setFilter(result);
-
   };
 
   return <>
